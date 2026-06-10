@@ -17,6 +17,7 @@ export class ProductsController {
         return 'Dettagli del prodotto:' + ` ${id}`; //stringa dinamica
     }
 
+
     @Post()
     createProduct(): string {
         return 'Creazione di un nuovo prodotto';
