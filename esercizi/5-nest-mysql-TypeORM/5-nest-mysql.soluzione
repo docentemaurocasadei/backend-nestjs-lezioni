@@ -1,0 +1,190 @@
+1. Installazione
+nest new nest-mysql
+cd nest-mysql
+
+npm install @nestjs/typeorm typeorm mysql2
+npm install class-validator class-transformer
+
+🔧 2. Config DB
+📄 app.module.ts
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CategoriesModule } from './categories/categories.module';
+
+@Module({
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: '127.0.0.1',
+      port: 3306,
+      username: 'root',
+      password: '',
+      database: 'hamburgeria',
+      autoLoadEntities: true,
+      synchronize: false,
+    }),
+    CategoriesModule,
+  ],
+})
+export class AppModule {}
+
+🔧 3. ValidationPipe
+📄 main.ts
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,
+    transform: true,
+  })
+);
+
+🔧 4. Creazione modulo
+nest g module categories
+nest g controller categories
+nest g service categories
+
+🔧 5. Entity
+📄 category.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+
+@Entity('categories')
+export class Category {
+
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @Column()
+  slug: string;
+
+  @Column({ nullable: true })
+  description: string;
+
+  @Column({ name: 'is_active' })
+  isActive: number;
+}
+
+🔧 6. Module
+📄 categories.module.ts
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Category } from './entities/category.entity';
+import { CategoriesService } from './categories.service';
+import { CategoriesController } from './categories.controller';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([Category])],
+  providers: [CategoriesService],
+  controllers: [CategoriesController],
+})
+export class CategoriesModule {}
+
+🔧 7. DTO
+📄 create-category.dto.ts
+import { IsString, IsOptional, IsInt } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class CreateCategoryDto {
+
+  @IsString()
+  name: string;
+
+  @IsString()
+  slug: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @Type(() => Number)
+  @IsInt()
+  isActive: number;
+}
+📄 update-category.dto.ts
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateCategoryDto } from './create-category.dto';
+
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}
+
+🔧 8. Service
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Category } from './entities/category.entity';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+
+@Injectable()
+export class CategoriesService {
+
+  constructor(
+    @InjectRepository(Category)
+    private repo: Repository<Category>,
+  ) {}
+
+  findAll() {
+    return this.repo.find();
+  }
+
+  findOne(id: number) {
+    return this.repo.findOneBy({ id });
+  }
+
+  create(data: CreateCategoryDto) {
+    const category = this.repo.create(data);
+    return this.repo.save(category);
+  }
+
+  async update(id: number, data: UpdateCategoryDto) {
+    await this.repo.update(id, data);
+    return this.repo.findOneBy({ id });
+  }
+
+  remove(id: number) {
+    return this.repo.delete(id);
+  }
+}
+
+🔧 9. Controller
+import {
+  Controller, Get, Post, Put, Delete,
+  Param, Body, ParseIntPipe
+} from '@nestjs/common';
+import { CategoriesService } from './categories.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+
+@Controller('categories')
+export class CategoriesController {
+
+  constructor(private service: CategoriesService) {}
+
+  @Get()
+  getAll() {
+    return this.service.findAll();
+  }
+
+  @Get(':id')
+  getOne(@Param('id', ParseIntPipe) id: number) {
+    return this.service.findOne(id);
+  }
+
+  @Post()
+  create(@Body() body: CreateCategoryDto) {
+    return this.service.create(body);
+  }
+
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateCategoryDto
+  ) {
+    return this.service.update(id, body);
+  }
+
+  @Delete(':id')
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.service.remove(id);
+  }
+}

@@ -1,0 +1,105 @@
+🔧 1. Logger base nel controller
+📄 app.controller.ts
+import { Controller, Get, Logger } from '@nestjs/common';
+@Controller()
+export class AppController {
+  private logger = new Logger(AppController.name);
+  @Get('test-log')
+  testLog() {
+    this.logger.log('Log normale');
+    this.logger.warn('Attenzione!');
+    this.logger.error('Errore simulato');
+    return { message: 'Controlla console' };
+  }
+}
+
+🔧 2. Logger nel service
+nest g service cards
+📄 cards.service.ts
+import { Injectable, Logger } from '@nestjs/common';
+@Injectable()
+export class CardsService {
+  private logger = new Logger(CardsService.name);
+  createCard(data: any) {
+    this.logger.log('Inizio creazione card');
+    const card = {
+      id: Date.now(),
+      ...data
+    };
+
+    this.logger.log('Card creata: ' + JSON.stringify(card));
+    return card;
+  }
+}
+
+🔧 3. Logging errori
+@Get('error')
+testError() {
+  this.logger.error('Errore forzato');
+  throw new Error('Errore test');
+}
+
+🔧 4. Installazione Winston
+npm install winston nest-winston
+
+🔧 5. Configurazione Winston
+📄 main.ts
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
+
+async function bootstrap() {
+
+  const logger = WinstonModule.createLogger({
+    transports: [
+      // Console
+      new winston.transports.Console({
+        format: winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.simple()
+        ),
+      }),
+
+      // File log
+      new winston.transports.File({
+        filename: 'logs/app.log',
+        level: 'info',
+        format: winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.json()
+        ),
+      }),
+
+      // File errori
+      new winston.transports.File({
+        filename: 'logs/error.log',
+        level: 'error',
+      }),
+    ],
+  });
+
+  const app = await NestFactory.create(AppModule, {
+    logger,
+  });
+
+  await app.listen(3000);
+}
+bootstrap();
+
+🔧 6. Creare cartella log
+mkdir logs
+
+🔧 7. Risultato
+Dopo chiamate:
+GET /test-log
+
+Avrai:
+Console
+[Nest] Log normale
+[Nest] Attenzione!
+[Nest] Errore simulato
+File logs/app.log
+{"level":"info","message":"Log normale","timestamp":"..."}
+File logs/error.log
+{"level":"error","message":"Errore simulato"}

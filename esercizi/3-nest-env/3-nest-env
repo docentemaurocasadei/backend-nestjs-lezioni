@@ -1,0 +1,37 @@
+SERCIZIO – Uso di .env in Node.js (NestJS)
+🎯 Obiettivo
+
+Creare un backend NestJS che utilizza un file .env per gestire:
+Porta del server
+Nome applicazione
+Chiave segreta JWT
+
+🔧 Parte 1 – Setup progetto
+Creare un progetto NestJS da zero.
+
+🔧 Parte 2 – Configurazione .env
+Creare un file .env con:
+PORT
+APP_NAME
+JWT_SECRET
+
+🔧 Parte 3 – Uso variabili
+Utilizzare le variabili .env per:
+Avviare il server sulla porta definita
+Restituire il nome applicazione da un endpoint
+Usare JWT_SECRET per firmare i token
+
+🔧 Parte 4 – Endpoint
+Creare:
+GET /info
+Restituisce:
+nome app
+porta
+POST /auth/login
+Usa JWT_SECRET per generare token
+
+
+🎯 Obiettivi didattici
+Capire cos’è .env
+Separare configurazione e codice
+Usare variabili ambiente in NestJS

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>CRUD Categories</title>
+
+<style>
+body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+input { margin: 5px; padding: 5px; }
+button { margin: 5px; padding: 5px 10px; }
+.card {
+  background: white;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+</style>
+
+</head>
+<body>
+
+<h2>Gestione Categories</h2>
+
+<!-- FORM -->
+<h3>Nuova / Modifica Categoria</h3>
+
+<input type="hidden" id="id">
+
+<input type="text" id="name" placeholder="Nome">
+<input type="text" id="slug" placeholder="Slug">
+<input type="text" id="description" placeholder="Descrizione">
+<input type="number" id="isActive" placeholder="Attivo (1/0)">
+
+<button onclick="saveCategory()">Salva</button>
+<button onclick="resetForm()">Reset</button>
+
+<hr>
+
+<h3>Lista</h3>
+<div id="list"></div>
+
+<script>
+
+const baseUrl = "http://localhost:3000/categories";
+
+// 🔄 GET
+function loadCategories() {
+  fetch(baseUrl)
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      data.forEach(cat => {
+        const div = document.createElement("div");
+        div.className = "card";
+
+        div.innerHTML = `
+          <strong>${cat.name}</strong> (${cat.slug})<br>
+          ${cat.description || ''}<br>
+          Attivo: ${cat.isActive}
+          <br><br>
+          <button onclick="editCategory(${cat.id}, '${cat.name}', '${cat.slug}', '${cat.description}', ${cat.isActive})">Modifica</button>
+          <button onclick="deleteCategory(${cat.id})">Elimina</button>
+        `;
+
+        list.appendChild(div);
+      });
+    });
+}
+
+// ➕ CREATE / UPDATE
+function saveCategory() {
+
+  const id = document.getElementById("id").value;
+
+  const data = {
+    name: document.getElementById("name").value,
+    slug: document.getElementById("slug").value,
+    description: document.getElementById("description").value,
+    isActive: parseInt(document.getElementById("isActive").value)
+  };
+
+  if (id) {
+    // ✏️ UPDATE
+    fetch(baseUrl + "/" + id, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      loadCategories();
+      resetForm();
+    });
+
+  } else {
+    // ➕ CREATE
+    fetch(baseUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      loadCategories();
+      resetForm();
+    });
+  }
+}
+
+// 📝 EDIT
+function editCategory(id, name, slug, description, isActive) {
+  document.getElementById("id").value = id;
+  document.getElementById("name").value = name;
+  document.getElementById("slug").value = slug;
+  document.getElementById("description").value = description || '';
+  document.getElementById("isActive").value = isActive;
+}
+
+// ❌ DELETE
+function deleteCategory(id) {
+  if (!confirm("Sei sicuro?")) return;
+
+  fetch(baseUrl + "/" + id, {
+    method: "DELETE"
+  })
+  .then(() => loadCategories());
+}
+
+// 🔄 RESET FORM
+function resetForm() {
+  document.getElementById("id").value = "";
+  document.getElementById("name").value = "";
+  document.getElementById("slug").value = "";
+  document.getElementById("description").value = "";
+  document.getElementById("isActive").value = "";
+}
+
+// 🚀 INIT
+loadCategories();
+
+</script>
+
+</body>
+</html>

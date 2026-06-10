@@ -1,0 +1,86 @@
+1. Creazione progetto
+npm i -g @nestjs/cli
+nest new env-project
+cd env-project
+
+🔧 2. Installazione config
+npm install @nestjs/config
+
+🔧 3. Creazione file .env
+📄 .env
+PORT=3001
+APP_NAME=My Nest App
+JWT_SECRET=supersegreto123
+
+🔧 4. ConfigModule
+📄 app.module.ts
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { AppController } from './app.controller';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
+  controllers: [AppController],
+})
+export class AppModule {}
+
+🔧 5. Uso variabili
+📄 main.ts
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  const port = process.env.PORT || 3000;
+
+  await app.listen(port);
+  console.log("Server avviato su porta:", port);
+}
+bootstrap();
+
+🔧 6. Endpoint info
+📄 app.controller.ts
+import { Controller, Get } from '@nestjs/common';
+
+@Controller()
+export class AppController {
+
+  @Get('info')
+  getInfo() {
+    return {
+      appName: process.env.APP_NAME,
+      port: process.env.PORT
+    };
+  }
+}
+
+🔧 7. JWT con .env
+Installazione:
+npm install @nestjs/jwt
+📄 esempio uso JWT
+import { JwtService } from '@nestjs/jwt';
+
+const jwt = new JwtService({
+  secret: process.env.JWT_SECRET
+});
+
+const token = jwt.sign({ user: 'admin' });
+
+▶️ 8. Avvio
+npm run start
+Test:
+
+http://localhost:3001/info
+🎯 Risultato
+
+Output esempio:
+
+{
+  "appName": "My Nest App",
+  "port": "3001"
+}

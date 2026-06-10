@@ -1,0 +1,158 @@
+Soluzione
+
+Installazione CLI globale:
+npm install -g @nestjs/cli
+
+Verifica installazione:
+nest --version
+
+Creazione progetto:
+nest new env-demo
+
+Entrare nella cartella:
+cd env-demo
+
+Avvio server:
+npm run start:dev
+
+Aprire il browser:
+http://localhost:3000
+
+Output atteso:
+
+Hello World!
+Alternativa senza installazione globale
+
+È possibile usare npx per evitare l’installazione globale:
+
+npx @nestjs/cli new env-demo
+cd env-demo
+npm run start:dev
+
+
+
+Parte 2 – Installare il modulo di configurazione
+
+NestJS utilizza il pacchetto @nestjs/config per leggere il file .env.
+
+Attività per lo studente
+Installare il modulo di configurazione nel progetto.
+
+Soluzione
+npm install @nestjs/config
+Parte 3 – Creare il file .env
+Attività per lo studente
+
+Nella cartella principale del progetto creare il file:
+.env
+
+Inserire alcune variabili di configurazione.
+Esempio:
+
+APP_NAME=NestEnvDemo
+APP_PORT=3000
+APP_VERSION=1.0
+
+
+Parte 4 – Configurare ConfigModule
+
+Per permettere a NestJS di leggere automaticamente il file .env bisogna configurare ConfigModule.
+Attività per lo studente
+
+Aprire il file:
+src/app.module.ts
+
+e importare il modulo di configurazione.
+Soluzione
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
+})
+export class AppModule {}
+Significato
+isGlobal: true
+
+permette di utilizzare ConfigService in tutta l’applicazione senza dover importare il modulo ogni volta.
+
+Parte 5 – Creare un service per leggere .env
+Attività per lo studente
+
+Creare un service chiamato:
+
+app-config
+che permetta di leggere le variabili presenti nel file .env.
+
+Soluzione
+Creazione service:
+
+nest g service app-config
+Implementazione del service
+
+File:
+src/app-config/app-config.service.ts
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+@Injectable()
+export class AppConfigService {
+
+  constructor(private configService: ConfigService) {}
+
+  getConfigValue(key: string): string {
+    const value = this.configService.get<string>(key);
+
+    if (!value) {
+      throw new Error(`Missing environment variable: ${key}`);
+    }
+
+    return value;
+  }
+
+}
+
+Parte 6 – Usare il service nel controller
+Attività per lo studente
+
+Utilizzare il service per leggere la variabile:
+
+APP_NAME
+
+e mostrarla tramite una API.
+
+Soluzione
+Modificare:
+
+src/app.controller.ts
+import { Controller, Get } from '@nestjs/common';
+import { AppConfigService } from './app-config/app-config.service';
+
+@Controller()
+export class AppController {
+
+  constructor(private configService: AppConfigService) {}
+
+  @Get()
+  getAppName(): string {
+    return this.configService.getConfigValue('APP_NAME');
+  }
+
+}
+Test finale
+
+Avviare il server:
+
+npm run start:dev
+
+Aprire nel browser:
+
+http://localhost:3000
+
+Output atteso:
+
+NestEnvDemo
