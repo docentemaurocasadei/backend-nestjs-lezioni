@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
+interface Product {
+    id: string;
+    name: string;
+    price: number;
+}
+
 @Injectable()
 export class ProductsService {
     findAll(){
