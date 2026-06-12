@@ -8,6 +8,8 @@ export interface Product {
 
 @Injectable()
 export class ProductsService {
+    constructor() {}
+
     private products: Product[] = [
         { id: '1', name: 'Burger Classico', price: 10 },
         { id: '2', name: 'Cheeseburger', price: 11.20 },
