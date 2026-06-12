@@ -1,37 +1,39 @@
-import { Body, Controller, Get, Param, Post, Put, Delete} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Delete, Query} from '@nestjs/common';
+import { ProductsService } from './products.service';
 
 @Controller('products')
 export class ProductsController {
+    constructor(
+        private readonly productsService: ProductsService
+    ){}
+
     @Get()
     findAll(){
-        return 'Lista dei prodotti';
+        return this.productsService.findAll();
+    }
+
+    @Get('search')
+    search(@Query('q') q: string){
+        return this.productsService.search(q);
     }
 
     @Get(':id')
     findOne(@Param('id') id: string){
-        return `Dettaglio prodotto ${id}`;
+        return this.productsService.findOne(id);
     }
 
     @Post()
     create(@Body() body: any){
-        return {
-            message: 'Prodotto creato',
-            data: body
-        };
+        return this.productsService.create(body)    ;
     }
 
     @Put(':id')
     update(@Param('id') id: string, @Body() body: any){
-        return {
-            message: `Prodotto ${id} aggiornato`,
-            data: body
-        };
+        return this.productsService.update(id, body);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string){
-        return {
-            message: `Prodotto ${id} eliminato`
-        };
+        return this.productsService.remove(id);
     }
 }
