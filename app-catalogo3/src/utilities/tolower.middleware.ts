@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 
 @Injectable()
-export class TolowerMiddleware implements NestMiddleware {
+export class ToLowerMiddleware implements NestMiddleware {
   use(req: any, res: any, next: () => void) {
     const body = req.body;
     if (body && typeof body === 'object') {
