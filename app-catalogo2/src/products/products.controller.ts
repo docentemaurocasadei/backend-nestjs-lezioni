@@ -23,12 +23,12 @@ export class ProductsController {
     }
 
     @Post()
-    create(@Body() body: any): Product | null {
+    create(@Body() body: { name: string, price: number }): Product | null {
         return this.productsService.create(body);
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() body: any): Product | NotFoundException {
+    update(@Param('id') id: string, @Body() body: { name: string, price: number }): Product | NotFoundException {
         return this.productsService.update(id, body);
     }
 

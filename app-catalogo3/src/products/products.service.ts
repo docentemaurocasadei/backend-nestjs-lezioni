@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 export interface Product {
-    id: string;
+    id: number;
     name: string;
     price: number;
 }
@@ -12,15 +12,15 @@ export class ProductsService {
     constructor(    ) {}
 
     private products: Product[] = [
-        { id: '1', name: 'Burger Classico', price: 10 },
-        { id: '2', name: 'Cheeseburger', price: 11.20 },
-        { id: '3', name: 'Double Cheeseburger', price: 14.50 },
+        { id: 1, name: 'Burger Classico', price: 10 },
+        { id: 2, name: 'Cheeseburger', price: 11.20 },
+        { id: 3, name: 'Double Cheeseburger', price: 14.50 },
     ];
     findAll(): Product[] | null {
         return this.products.length > 0 ? this.products : null;
     }
 
-    findOne(id: string): Product | NotFoundException {
+    findOne(id: number): Product | NotFoundException {
         const product = this.products.find(product => product.id === id);
         if (!product) {
             throw new NotFoundException('Product not found');
@@ -29,9 +29,9 @@ export class ProductsService {
     }
 
     create(body: any): Product {
-        const maxId = this.products.reduce((max, product) => (parseInt(product.id) > max ? parseInt(product.id) : max), 0); 
+        const maxId = this.products.reduce((max, product) => (product.id > max ? product.id : max), 0); 
         const newProduct: Product = {
-            id: (maxId + 1).toString(),
+            id: maxId + 1,
             name: body.name,
             price: body.price
         };
@@ -39,7 +39,7 @@ export class ProductsService {
         return newProduct;
     }
 
-    update(id: string, body: any): Product | NotFoundException  {
+    update(id: number, body: any): Product | NotFoundException  {
         const productIndex = this.products.findIndex(product => product.id === id);
         if (productIndex === -1) {
             throw new NotFoundException('Product not found');
@@ -48,7 +48,7 @@ export class ProductsService {
         return this.products[productIndex];
     }
 
-    remove(id: string): Product | NotFoundException {
+    remove(id: number): Product | NotFoundException {
         const productIndex = this.products.findIndex(product => product.id === id);
         if (productIndex === -1) {
             throw new NotFoundException('Product not found');
