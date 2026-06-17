@@ -4,7 +4,7 @@ import { ProductsController } from './products.controller';
 import { DatabasesModule } from 'src/databases/databases.module';
 
 @Module({
-  imports: [DatabasesModule],
+  imports: [],
   controllers: [ProductsController],
   providers: [ProductsService],
   exports: []

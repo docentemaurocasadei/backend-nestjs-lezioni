@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { DatabasesService } from 'src/databases/databases.service';
 
 export interface User {
   id: number;
@@ -9,6 +10,10 @@ export interface User {
 
 @Injectable()
 export class UsersService {
+constructor(
+  private readonly databasesService: DatabasesService
+) {}
+
   private users: User[] = [
     { id: 1, name: 'Mario', surname: 'Rossi', phone: '1234567890' },
     { id: 2, name: 'Luigi', surname: 'Verdi', phone: '0987654321' },
@@ -26,7 +31,10 @@ export class UsersService {
   }
 
   findAll() {
-    return this.users;
+    return {
+      users: this.users,
+      databaseInfo: this.databasesService.getInfo() 
+    }
   }
 
   findOne(id: number) {

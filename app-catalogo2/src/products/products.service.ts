@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config/dist/config.service';
+import { DatabasesService } from 'src/databases/databases.service';
 
 export interface Product {
     id: string;
@@ -8,7 +10,10 @@ export interface Product {
 
 @Injectable()
 export class ProductsService {
-    constructor() {}
+    constructor(
+        private readonly databasesService: DatabasesService,
+        private readonly configService: ConfigService
+    ) {}
 
     private products: Product[] = [
         { id: '1', name: 'Burger Classico', price: 10 },
@@ -16,6 +21,8 @@ export class ProductsService {
         { id: '3', name: 'Double Cheeseburger', price: 14.50 },
     ];
     findAll(): Product[] | null {
+        console.log('Database info:', this.databasesService.getInfo());
+        console.log('Config info:', this.configService.get('APP_NAME'));
         return this.products.length > 0 ? this.products : null;
     }
 
