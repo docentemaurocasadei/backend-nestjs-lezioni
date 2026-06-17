@@ -5,6 +5,7 @@ export interface Product {
     id: number;
     name: string;
     price: number;
+    sku?: string;
 }
 
 @Injectable()
@@ -12,11 +13,12 @@ export class ProductsService {
     constructor(    ) {}
 
     private products: Product[] = [
-        { id: 1, name: 'Burger Classico', price: 10 },
-        { id: 2, name: 'Cheeseburger', price: 11.20 },
-        { id: 3, name: 'Double Cheeseburger', price: 14.50 },
+        { id: 1, name: 'Burger Classico', price: 10, sku: 'SKU12345' },
+        { id: 2, name: 'Cheeseburger', price: 11.20, sku: 'SKU67890' },
+        { id: 3, name: 'Double Cheeseburger', price: 14.50, sku: 'SKU54321' },
     ];
     findAll(): Product[] | null {
+        console.log('products.service.ts: 1 get  ');
         return this.products.length > 0 ? this.products : null;
     }
 
@@ -33,13 +35,15 @@ export class ProductsService {
         const newProduct: Product = {
             id: maxId + 1,
             name: body.name,
-            price: body.price
+            price: body.price,
+            sku: body.sku
         };
         this.products.push(newProduct);
         return newProduct;
+
     }
 
-    update(id: number, body: any): Product | NotFoundException  {
+    update(id: number, body: UpdateProductDto): Product | NotFoundException  {
         const productIndex = this.products.findIndex(product => product.id === id);
         if (productIndex === -1) {
             throw new NotFoundException('Product not found');
