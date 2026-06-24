@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ParseIntPipe } from '@nestjs/common';
 import { ApiOperation } from 'node_modules/@nestjs/swagger/dist/decorators/api-operation.decorator';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @ApiTags('products')
 @Controller('products')
@@ -22,6 +23,12 @@ export class ProductsController {
   @Get()
   findAll() {
     return this.productsService.findAll();
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('protetta')
+  protetta(){
+    return { message: 'Questa è una rotta protetta' };  
   }
 
   @ApiOperation({ summary: 'Search products by name' })
@@ -48,4 +55,5 @@ export class ProductsController {
   remove(@Param('id', ParseIntPipe  ) id: number) {
     return this.productsService.remove(id);
   }
+
 }

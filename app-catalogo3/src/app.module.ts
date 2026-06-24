@@ -16,12 +16,12 @@ import { ToLowerMiddleware } from './utilities/tolower.middleware';
 export class AppModule {
   configure(consumer: any) {
     // console.log('app.module.ts: 1 start ');
-    consumer.apply(AuthMiddleware).forRoutes(
-      { path: 'products', method: RequestMethod.ALL },
-      { path: 'suppliers', method: RequestMethod.POST },
-      { path: 'suppliers/:id', method: RequestMethod.PUT },
-      { path: 'suppliers/:id', method: RequestMethod.DELETE },
-    );
+    // consumer.apply(AuthMiddleware).forRoutes(
+    //   { path: 'products', method: RequestMethod.ALL },
+    //   { path: 'suppliers', method: RequestMethod.POST },
+    //   { path: 'suppliers/:id', method: RequestMethod.PUT },
+    //   { path: 'suppliers/:id', method: RequestMethod.DELETE },
+    // );
     consumer.apply(ToLowerMiddleware).forRoutes(
       { path: 'products', method: RequestMethod.POST },
       { path: 'products/:id', method: RequestMethod.PUT },
