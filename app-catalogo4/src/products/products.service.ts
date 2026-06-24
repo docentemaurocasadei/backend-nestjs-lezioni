@@ -1,23 +1,26 @@
 import { Injectable, Query } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-
+import { DatabaseService } from 'src/database/database.service';
 @Injectable()
 export class ProductsService {
+  constructor(private readonly databaseService: DatabaseService) {}
   // create(createProductDto: CreateProductDto) {
   //   return 'This action adds a new product';
   // }
 
-  findAll() {
-    return `This action returns all products`;
+  async findAll() {
+    return this.databaseService.query('SELECT * FROM products');
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: number) {
+    const results = await this.databaseService.query('SELECT * FROM products WHERE id = ?', [id]);
+    return results[0];
+
   }
 
-  search(p: string) {
-    return `This action returns a #${p} product`;
+  async search(p: string) {
+    return this.databaseService.query('SELECT * FROM products WHERE name LIKE ?', [`%${p}%`]);
   }
 
   // update(id: number, updateProductDto: UpdateProductDto) {
