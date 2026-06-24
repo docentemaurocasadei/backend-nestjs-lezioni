@@ -10,17 +10,17 @@ export class ProductsService {
   // }
 
   async findAll() {
-    return this.databaseService.query('SELECT * FROM products');
+    return this.databaseService.query('SELECT * FROM products join product_images on products.id = product_images.product_id');
   }
 
   async findOne(id: number) {
-    const results = await this.databaseService.query('SELECT * FROM products WHERE id = ?', [id]);
+    const results = await this.databaseService.query('SELECT * FROM products join product_images on products.id = product_images.product_id WHERE products.id = ?', [id]);
     return results[0];
 
   }
 
   async search(p: string) {
-    return this.databaseService.query('SELECT * FROM products WHERE name LIKE ?', [`%${p}%`]);
+    return this.databaseService.query('SELECT * FROM products join product_images on products.id = product_images.product_id WHERE products.name LIKE ?', [`%${p}%`]);
   }
 
   // update(id: number, updateProductDto: UpdateProductDto) {
