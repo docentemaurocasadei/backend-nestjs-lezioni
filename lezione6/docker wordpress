@@ -1,0 +1,5 @@
+docker run --name wordpressdb --network wpnet -e MYSQL_DATABASE=wordpress -e MYSQL_USER=wp_user -e MYSQL_PASSWORD=wp_pass -e MYSQL_ROOT_PASSWORD=root_pass -d mysql:5.7
+
+docker run --name wordpresssite --network wpnet -p 8000:80 -e WORDPRESS_DB_HOST=wordpressdb:3306 -e WORDPRESS_DB_NAME=wordpress -e WORDPRESS_DB_USER=wp_user -e WORDPRESS_DB_PASSWORD=wp_pass -d wordpress
+
+docker run --name myphpadmin --network wpnet -p 8080:80 -e PMA_HOST=wordpressdb -d phpmyadmin
