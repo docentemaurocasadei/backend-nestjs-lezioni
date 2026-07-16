@@ -3,6 +3,9 @@ docker pull mysql:8.4
 
 - in alternativa se eseguo docker run e l'immagine non l'ho già scaricata, me la scarica automaticamente
 
+# Network
+docker network create net_jds_ok
+
 # Creare il volume
 docker volume create vol_dbfsan
 
