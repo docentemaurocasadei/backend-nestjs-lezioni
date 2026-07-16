@@ -1,3 +1,25 @@
+PW funzionante:
+https://github.com/docentemaurocasadei/jwt-datatabase-sql-ok
+aggiungere .env-developer
+# .env-developer
+APP_NAME=Hamburgeria App
+APP_ENV=development
+APP_PORT=3000
+
+JWT_SECRET=super_secret_key
+JWT_EXPIRES_IN=15m
+
+JWT_REFRESH_SECRET=super_refresh_secret_key
+JWT_REFRESH_EXPIRES_IN=7d
+
+DB_HOST=db_jds_ok
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=root
+DB_NAME=hamburgeria
+
+------ comandi docker ------
+
 docker network create net_jds_ok
 
 docker volume create voldb_jds_ok
